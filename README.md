@@ -1,5 +1,5 @@
 # eGAR Python 3 Latest
-> Python 3.7 container \
+> Python 3 lightweight carbon-alpine. \
 > Base image used for spinning up python based apps images/containers
 
 ## Installing & getting started
@@ -7,23 +7,22 @@
 > Run the following steps to get base image available
 
 1) Clone this Repo
-2) Run the docker build and run commands
-   ```
-   DOCKER_REPOSITORY=quay.io/ukhomeofficedigital
-   DOCKER_NAME=egar-python-3
-   TAG=1.0.0
-   docker build -t ${DOCKER_REPOSITORY}/${DOCKER_NAME}:${TAG} .
-   ```
-3) Login to quay.io
-   ```
-   docker login quay.io
-   ```
-4) Push the container to quay.io
-   ```
-   docker push quay.io/ukhomeofficedigital/egar-node-8
-   ```
+2) Create new branch
+3) Make any changes you require
+4) Push branch to Github
+5) Open Pull Request
+6) Image should be build in quay.io with `DRONE_BUILD_NUMBER` tag
+7) Image will be security scanned
+8) When image has been approved Pull Request is merged
+9) Image gets tagged with `latest` tag in quay.io
 
-> This container should then be available for use as the base image
+> Container should then be available for use as the base image
+
+> Image can also be tagged manually with version of your choice (replace v1.0.0 with the tag you actually want to use):
+```
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## Contributing
 

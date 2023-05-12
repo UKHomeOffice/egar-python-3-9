@@ -34,7 +34,7 @@ pull requests to us.
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the 
 [tags on this repository](https://github.com/UKHomeOffice/egar-python-3/tags). 
 
-## Authors
+### Authors
 
 * **Pawel Niemiec** - *Initial work* - [GitHub](https://github.com/pawniemiec)
 

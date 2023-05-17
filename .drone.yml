@@ -12,7 +12,7 @@ platform:
 steps:
 - name: build_new_image
   pull: if-not-exists
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
+  image: quay.io/ukhomeofficedigital/drone-docker
   environment:
     DOCKER_USERNAME: ukhomeofficedigital+egar
     DOCKER_PASSWORD:

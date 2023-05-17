@@ -12,7 +12,7 @@ platform:
 steps:
 - name: build_new_image
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/egar-python3.9.2
+  image: quay.io/ukhomeofficedigital/drone-docker
   environment:
     DOCKER_USERNAME: ukhomeofficedigital+egar
     DOCKER_PASSWORD:
@@ -28,6 +28,9 @@ steps:
   - docker build -t egar-python3.9.2:$${DRONE_COMMIT} .
   - docker tag egar-python3.9.2:$${DRONE_COMMIT} $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python3.9.2
   - docker push quay.io/ukhomeofficedigital/egar-python3.9.2:$${DRONE_COMMIT}
+  volumes:
+    - name: dockersock
+      path: /var/run
   settings:
     group: build-stage
 

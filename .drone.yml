@@ -26,7 +26,7 @@ steps:
   - echo "echo docker now available."
   - docker login -u="$${DOCKER_USERNAME}" -p=$${DOCKER_PASSWORD} $${DOCKER_REGISTRY_URL}
   - docker build -t egar-python3.9.2:$${DRONE_COMMIT} .
-  - docker tag egar-python3.9.2:$${DRONE_COMMIT} $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python3.9.2:$${DRONE_COMMIT}
+  - docker tag egar-python3.9.2:$${DRONE_COMMIT} $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python3.9.2
   - docker push quay.io/ukhomeofficedigital/egar-python3.9.2:$${DRONE_COMMIT}
   settings:
     group: build-stage

@@ -1,42 +1,64 @@
-pipeline:
-  image_to_quay:
-    image: quay.io/ukhomeofficedigital/drone-docker
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_USERNAME=ukhomeofficedigital+egar
-    registry: quay.io
-    repo: quay.io/ukhomeofficedigital/egar-python-3
-    tags:
-      - build-${DRONE_BUILD_NUMBER}
+---
+kind: pipeline
+name: default
+type: kubernetes
+
+
+platform:
+  os: linux
+  arch: amd64
+
+
+steps:
+- name: build_new_image
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/drone-docker
+  environment:
+    DOCKER_USERNAME: ukhomeofficedigital+egar
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+    DOCKER_REGISTRY_URL: quay.io
+    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3
+  commands:
+  # Wait for the docker service to be up
+  - echo "Checking for docker availability."
+  - n=0; while [ "$n" -lt 60 ] && ! docker stats --no-stream >/dev/null 2>&1; do n=$(( n + 1 )); sleep 1; done
+  - echo "echo docker now available."
+  - docker login -u="$${DOCKER_USERNAME}" -p=$${DOCKER_PASSWORD} $${DOCKER_REGISTRY_URL}
+  - docker build -t egar-python-3:$${DRONE_COMMIT} .
+  - docker tag egar-python-3:$${DRONE_COMMIT} $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:$${DRONE_COMMIT}
+  - docker push quay.io/ukhomeofficedigital/egar-python-3:$${DRONE_COMMIT}
+  settings:
+    group: build-stage
+
     when:
       branch:
         exclude: master
       event: [ push, pull_request ]
 
-  image_to_quay:
-    image: quay.io/ukhomeofficedigital/drone-docker
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_USERNAME=ukhomeofficedigital+egar
-    registry: quay.io
-    repo: quay.io/ukhomeofficedigital/egar-python-3
-    tags:
-      - latest
-    when:
-      branch: master
-      event: [ push ]
+- name: scan-newly-built-image
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
+  pull: always
+  failure: ignore
+  environment:
+    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3:${DRONE_COMMIT}
+    TOLERATE: high
+  when:
+    event:
+    - push
 
-  tagged_image_to_quay:
-    image: quay.io/ukhomeofficedigital/drone-docker
-    secrets:
-      - docker_password
-    environment:
-      - DOCKER_USERNAME=ukhomeofficedigital+egar
-    registry: quay.io
-    repo: quay.io/ukhomeofficedigital/egar-python-3
-    tags:
-      - ${DRONE_TAG}
-    when:
-      event: tag
+  depends_on:
+  - build_new_image
+
+services:
+  - name: docker
+    image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+  - name: anchore-submission-server
+    image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
+    pull: always
+    commands:
+      - /run.sh server
+
+volumes:
+  - name: dockersock
+    temp: {}

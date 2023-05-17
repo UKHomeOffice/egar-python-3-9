@@ -12,7 +12,7 @@ platform:
 steps:
 - name: build_new_image
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/drone-docker
+  image: quay.io/ukhomeofficedigital/egar-python3.9.2
   environment:
     DOCKER_USERNAME: ukhomeofficedigital+egar
     DOCKER_PASSWORD:

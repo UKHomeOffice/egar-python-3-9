@@ -60,7 +60,7 @@ steps:
     - feature/*
     event:
     - push
-    QUAY_REGISTRY_URL: quay.io
+    DOCKER_REGISTRY_URL: quay.io
     IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3
   commands:
   # Wait for the docker service to be up
@@ -69,8 +69,8 @@ steps:
   - echo "echo docker now available."
   - docker login -u="$${DOCKER_USERNAME}" -p="$${DOCKER_PASSWORD}" quay.io
   - docker build -t egar-python-3:$${DRONE_COMMIT} .
-  - docker tag egar-python-3:$${DRONE_COMMIT} $${QUAY_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
-  - docker push $${QUAY_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
+  - docker tag egar-python-3:$${DRONE_COMMIT} $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
+  - docker push $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
   volumes:
     - name: dockersock
       path: /var/run

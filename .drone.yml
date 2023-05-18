@@ -10,34 +10,73 @@ platform:
 
 
 steps:
-- name: build_new_image
+
+- name: Build
+  pull: if-not-exists
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
+  commands: 
+  # Wait for the docker service to be up
+  - echo "Checking for docker availability."
+  - n=0; while [ "$n" -lt 60 ] && ! docker stats --no-stream >/dev/null 2>&1; do n=$(( n + 1 )); sleep 1; done
+  - echo "echo docker now available."
+  - docker build -t egar-python-3:$${DRONE_COMMIT} .
+  volumes:
+  - name: dockersock
+    path: /var/run
+
+
+# - name: Push image to artifactory
+#   pull: if-not-exists
+#   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
+#   commands:
+#   # Wait for the docker service to be up
+#   - echo "Checking for docker availability."
+#   - n=0; while [ "$n" -lt 60 ] && ! docker stats --no-stream >/dev/null 2>&1; do n=$(( n + 1 )); sleep 1; done
+#   - echo "echo docker now available."
+#   - docker login -u="$${DOCKER_USERNAME}" -p="$${DOCKER_PASSWORD}" docker.digital.homeoffice.gov.uk
+#   - docker tag egar-python-3:$${DRONE_COMMIT} docker.digital.homeoffice.gov.uk/egar/egar-python-3:$${DRONE_COMMIT}
+#   - docker push docker.digital.homeoffice.gov.uk/egar/egar-python-3:$${DRONE_COMMIT}
+#   environment:
+#     DOCKER_PASSWORD:
+#       from_secret: DOCKER_PASSWORD
+#     DOCKER_USERNAME:
+#       from_secret: DOCKER_USERNAME
+#   when:
+#     branch:
+#     - master
+#     - feature/*
+#     event:
+#     - push
+- name: build_new_image_push_to_quay
   pull: if-not-exists
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
   environment:
-    DOCKER_USERNAME: ukhomeofficedigital+egar
-    DOCKER_PASSWORD:
-      from_secret: docker_password
-    DOCKER_REGISTRY_URL: quay.io
+    QUAY_DOCKER_PASSWORD:
+      from_secret: QUAY_DOCKER_PASSWORD
+    QUAY_DOCKER_USERNAME:
+      from_secret: QUAY_DOCKER_USERNAME
+  when:
+    branch:
+    - master
+    - feature/*
+    event:
+    - push
+    QUAY_REGISTRY_URL: quay.io
     IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3
   commands:
   # Wait for the docker service to be up
   - echo "Checking for docker availability."
   - n=0; while [ "$n" -lt 60 ] && ! docker stats --no-stream >/dev/null 2>&1; do n=$(( n + 1 )); sleep 1; done
   - echo "echo docker now available."
-  - docker login -u="$${DOCKER_USERNAME}" -p=$${DOCKER_PASSWORD} $${DOCKER_REGISTRY_URL}
+  - docker login -u="$${QUAY_DOCKER_USERNAME}" -p="$${QUAY_DOCKER_PASSWORD}" quay.io
   - docker build -t egar-python-3:$${DRONE_COMMIT} .
-  - docker tag egar-python-3:$${DRONE_COMMIT} $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
-  - docker push $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
+  - docker tag egar-python-3:$${DRONE_COMMIT} $${QUAY_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
+  - docker push $${QUAY_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
   volumes:
     - name: dockersock
       path: /var/run
   settings:
     group: build-stage
-
-    when:
-      branch:
-        exclude: master
-      event: [ push, pull_request ]
 
 - name: scan-newly-built-image
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
@@ -51,7 +90,7 @@ steps:
     - push
 
   depends_on:
-  - build_new_image
+  - build_new_image_push_to_quay
 
 services:
   - name: docker

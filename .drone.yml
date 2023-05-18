@@ -51,10 +51,9 @@ steps:
   pull: if-not-exists
   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
   environment:
-    QUAY_DOCKER_PASSWORD:
-      from_secret: QUAY_DOCKER_PASSWORD
-    QUAY_DOCKER_USERNAME:
-      from_secret: QUAY_DOCKER_USERNAME
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+    DOCKER_USERNAME: ukhomeofficedigital+egar
   when:
     branch:
     - master

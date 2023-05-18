@@ -54,14 +54,15 @@ steps:
     DOCKER_PASSWORD:
       from_secret: docker_password
     DOCKER_USERNAME: ukhomeofficedigital+egar
+    DOCKER_REGISTRY_URL: quay.io
+    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3
   when:
     branch:
     - master
     - feature/*
     event:
     - push
-    DOCKER_REGISTRY_URL: quay.io
-    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3
+
   commands:
   # Wait for the docker service to be up
   - echo "Checking for docker availability."

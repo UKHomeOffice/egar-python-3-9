@@ -11,7 +11,8 @@
 3) Make any changes you require
 4) Push branch to Github
 5) Open Pull Request
-6) Image should be build in quay.io with `DRONE_BUILD_NUMBER` tag
+6) Image should be build in quay.io with `DRONE_C
+OMMIT_SHA` tag
 7) Image will be security scanned
 8) When image has been approved Pull Request is merged
 9) Image gets tagged with `latest` tag in quay.io

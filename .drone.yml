@@ -62,7 +62,7 @@ steps:
     - feature/*
     event:
     - push
-
+# trigger to push new build
   commands:
   # Wait for the docker service to be up
   - echo "Checking for docker availability."

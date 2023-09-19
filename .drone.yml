@@ -86,12 +86,12 @@ steps:
       cpu: 1000
       memory: 1024Mi
   environment:
-    IMAGE_NAME: docker.digital.homeoffice.gov.uk/egar/data-integr-cbp:${DRONE_COMMIT}
+    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python3.9:${DRONE_COMMIT}
     IGNORE_UNFIXED: true
   when:
     event:
     - push
-    depends_on: quay.io/ukhomeofficedigital/egar-python3.9:${DRONE_COMMIT}
+    depends_on: build_new_image_push_to_quay
 
 services:
   - name: docker

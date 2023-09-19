@@ -1,4 +1,4 @@
-FROM python:3.7-alpine3.17
+FROM python:3.7-alpine3.8
 
 # Update distribution
 RUN apk update \

@@ -14,12 +14,12 @@ steps:
 # - name: Build
 #   pull: if-not-exists
 #   image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
-#   commands: 
+#   commands:
 #   # Wait for the docker service to be up
 #   - echo "Checking for docker availability."
 #   - n=0; while [ "$n" -lt 60 ] && ! docker stats --no-stream >/dev/null 2>&1; do n=$(( n + 1 )); sleep 1; done
 #   - echo "echo docker now available."
-#   - docker build -t egar-python-3:$${DRONE_COMMIT} .
+#   - docker build -t egar-python-3.9:$${DRONE_COMMIT} .
 #   volumes:
 #   - name: dockersock
 #     path: /var/run
@@ -34,8 +34,8 @@ steps:
 #   - n=0; while [ "$n" -lt 60 ] && ! docker stats --no-stream >/dev/null 2>&1; do n=$(( n + 1 )); sleep 1; done
 #   - echo "echo docker now available."
 #   - docker login -u="$${DOCKER_USERNAME}" -p="$${DOCKER_PASSWORD}" docker.digital.homeoffice.gov.uk
-#   - docker tag egar-python-3:$${DRONE_COMMIT} docker.digital.homeoffice.gov.uk/egar/egar-python-3:$${DRONE_COMMIT}
-#   - docker push docker.digital.homeoffice.gov.uk/egar/egar-python-3:$${DRONE_COMMIT}
+#   - docker tag egar-python-3.9:$${DRONE_COMMIT} docker.digital.homeoffice.gov.uk/egar/egar-python-3.9:$${DRONE_COMMIT}
+#   - docker push docker.digital.homeoffice.gov.uk/egar/egar-python-3.9:$${DRONE_COMMIT}
 #   environment:
 #     DOCKER_PASSWORD:
 #       from_secret: DOCKER_PASSWORD
@@ -55,7 +55,7 @@ steps:
       from_secret: docker_password
     DOCKER_USERNAME: ukhomeofficedigital+egar
     DOCKER_REGISTRY_URL: quay.io
-    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3
+    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3.9
   when:
     branch:
     - master
@@ -70,9 +70,9 @@ steps:
   - n=0; while [ "$n" -lt 60 ] && ! docker stats --no-stream >/dev/null 2>&1; do n=$(( n + 1 )); sleep 1; done
   - echo "echo docker now available."
   - docker login -u="$${DOCKER_USERNAME}" -p="$${DOCKER_PASSWORD}" quay.io
-  - docker build -t egar-python-3:$${DRONE_COMMIT} .
-  - docker tag egar-python-3:$${DRONE_COMMIT} $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
-  - docker push $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3:latest
+  - docker build -t egar-python-3.9:$${DRONE_COMMIT} .
+  - docker tag egar-python-3.9:$${DRONE_COMMIT} $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3.9:latest
+  - docker push $${DOCKER_REGISTRY_URL}/ukhomeofficedigital/egar-python-3.9:latest
   volumes:
     - name: dockersock
       path: /var/run
@@ -84,7 +84,7 @@ steps:
   pull: always
   failure: ignore
   environment:
-    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3:${DRONE_COMMIT}
+    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python-3.9:${DRONE_COMMIT}
     TOLERATE: high
   when:
     event:

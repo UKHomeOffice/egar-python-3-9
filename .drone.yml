@@ -78,28 +78,24 @@ steps:
   settings:
     group: build-stage
 
-- name: scan-newly-built-image
-  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
-  pull: always
+- name: scan-image
+  image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/trivy/client:latest
   failure: ignore
+  resources:
+    limits:
+      cpu: 1000
+      memory: 1024Mi
   environment:
-    IMAGE_NAME: quay.io/ukhomeofficedigital/egar-python3.9:${DRONE_COMMIT}
-    TOLERATE: high
+    IMAGE_NAME: docker.digital.homeoffice.gov.uk/egar/data-integr-cbp:${DRONE_COMMIT}
+    IGNORE_UNFIXED: true
   when:
     event:
     - push
-
-  depends_on:
-  - build_new_image_push_to_quay
+    depends_on: quay.io/ukhomeofficedigital/egar-python3.9:${DRONE_COMMIT}
 
 services:
   - name: docker
     image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
-  - name: anchore-submission-server
-    image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/anchore-submission:latest
-    pull: always
-    commands:
-      - /run.sh server
 
 volumes:
   - name: dockersock
